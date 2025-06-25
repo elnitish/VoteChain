@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voter Registration</title>
+    <link rel="stylesheet" href="register-voter.css" />
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN</div>
+        <div class="wallet-status">
+            <button id="connect" style="background-color: red;" disabled>Not Connected</button>
+            <button id="walletSign" style="background-color: red;" class="wallet-icon">🧾</button>
+        </div>
+    </header>
+
+    <div class="img">
+        <main class="form-container">
+            <h1>Voter Registration Form</h1>
+
+            <form id="voterForm" method="post" action="/voterRegister">
+                <label for="voterName">Full Name</label>
+                <input type="text" id="voterName" placeholder="Enter your full name" name="voterName" required />
+
+                <label for="walletAddress">Wallet Address</label>
+                <input type="text" id="walletAddress" placeholder="Enter wallet address" name="walletAddress" readonly
+                    required />
+                <button type="button"  class="btn" onclick="connectAndFill()">Fetch Address from MetaMask</button>
+
+                <button type="submit" id="submit-btn" class="submit-btn">Register</button>
+            </form>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    let signer, contract, contractABI, contractAddress;
+    async function init() {
+        if (!window.ethereum) {
+            alert("Metamask not found");
+            return;
+        }
+        console.log("MetaMask is installed!");
+        let contractData = await fetch("contractAddress.json");
+        let contractJson = await contractData.json();
+        contractAddress = contractJson.Address;
+        console.log("Contract Address:", contractAddress);
+        const abiResponse = await fetch("abi/Voting.json");
+        const abiData = await abiResponse.json();
+        contractABI = abiData.abi;
+        console.log("Contract ABI:", contractABI);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        if (signer) {
+            console.log("Conneted to wallet:", signer);
+        }
+        if (address) {
+            document.getElementById("connect").innerText = address;
+            document.getElementById("connect").style.backgroundColor = "green";
+            document.getElementById("walletSign").style.backgroundColor = "green";
+            console.log("Address fetched:", address);
+            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            console.log("Contract initialized:", contract);
+        }
+    }
+    init();
+    async function connectAndFill() {
+        if (window.ethereum) {
+            try {
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                document.getElementById("walletAddress").value = accounts[0];
+            } catch (error) {
+                alert("Connection to MetaMask failed.");
+            }
+        } else {
+            alert("MetaMask is not installed!");
+        }
+    }
+
+    document.getElementById("voterForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        let btn = document.getElementById("submit-btn");
+        btn.disabled=true;
+        const name = document.getElementById("voterName").value;
+        const address = document.getElementById("walletAddress").value;
+        console.log("Registering voter:", name, address);
+
+
+        if (!name || !address) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        try {
+            let userStats = await contract.getVoterStats(address);
+            if (userStats[0] === true) {
+                alert("You are already registered as a voter.");
+                console.log("User already registered:");
+                return;
+            }
+            let tx = await contract.addVoter(address, name);
+            await tx.wait();
+            alert(`Voter Registered!\nName: ${name}\nAddress: ${address}`);
+        } catch (error) {
+            console.error("Registration failed:", error);
+            alert("Registration failed. Please try again.");
+        }
+        // Replace this with your smart contract call or backend logic
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="home.css" />
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN</div>
+        <button class="connect-btn" id="connectWallet" onclick="connectWallet()">Connect Wallet</button>
+    </header>
+
+    <main class="main-container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>VOTE<span>CHAIN</span></h1>
+                <p>Secure Voting System built on blockchain</p>
+                <button class="connect-btn" onclick="connectWallet()" id="walletText">Connect your Wallet</button>
+                <div class="button-group">
+                    <button onclick="vote()" class="btn primary">VOTE!!!</button>
+                    <button onclick="regVoter()" class="btn">Register as Voter</button>
+                    <button onclick="regCandidate()" class="btn">Participate as Candidate</button>
+                    <button onclick="viewCandidate()" class="btn">View Candidates</button>
+                    <button onclick="getWinner()" class="btn">Get WINNER!!!!</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let contractAddress;
+        let signer, contract, contractABI;
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert("MetaMask not found. Please install it to use this dApp.");
+                return;
+            }
+
+            try {
+                // Request wallet connection
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                const userAddress = accounts[0];
+
+                // Update UI
+                const walletConnectBtn = document.getElementById("connectWallet");
+                walletConnectBtn.innerText = `Connected: ${userAddress}`;
+                walletConnectBtn.disabled = true;
+                walletConnectBtn.style.backgroundColor = "green";
+                walletConnectBtn.style.color = "white";
+
+                document.getElementById("walletText").innerText = "";
+
+                // Show buttons
+                document.querySelectorAll(".btn").forEach(btn => {
+                    btn.style.display = "block";
+                });
+
+                // Load contract address
+                contractAddress = await (await fetch("contractAddress.json")).json();
+                contractAddress = contractAddress.Address;
+                console.log("Contract Address:", contractAddress);
+
+                // Load contract ABI
+                contractABI = await (await fetch("abi/Voting.json")).json();
+                contractABI=contractABI.abi;
+                console.log("Contract ABI:", contractABI);
+
+                // Setup provider, signer, and contract
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                const signer = provider.getSigner();
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                console.log("Contract initialized:", contract);
+
+                // Optional: Fetch election time if needed
+                const electionStart = await contract.electionStart();
+                const electionEnd = await contract.electionEnd();
+                console.log("Election starts:", electionStart);
+                console.log("Election ends:", electionEnd);
+
+            } catch (error) {
+                console.error("Connection rejected:", error);
+            }
+        }
+
+        async function vote() {
+            if (window.ethereum) {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                console.log("Contract initialized:", contract);
+                let electionStart = await contract.electionStart();
+                let electionEnd = await contract.electionEnd();
+                if (electionStart === true && electionEnd === false) {
+                    window.location.href = "/vote";
+                }
+                else {
+                    alert("Elections are not currently active. Please try again later.");
+                    console.log("hlulululululul")
+                }
+            }
+        }
+        function regVoter() {
+            window.location.href = "/register-voter";
+        }
+        function regCandidate() {
+            window.location.href = "/candidate-form";
+        }
+        function viewCandidate() {
+            window.location.href = "/candidates-list";
+        }
+        async function getWinner() {
+            let tx = await contract.electionEnd();
+            if (tx === true) {
+                window.location.href = "/winner";
+            }
+            else {
+                alert("Elections are not yet ended. Please try again later.");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain Admin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f9f9fb;
+            color: #111;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar {
+            background: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #4f46e5;
+        }
+
+        .admin-background::before {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('/img/33333.jpg') no-repeat center;
+            max-width: 70%;
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 70%;
+            width: 70%;
+            background-size: cover;
+            filter: blur(2px);
+            border-radius: 20px;
+            z-index: 0;
+            margin-left: 15%;
+            margin-right: 15%;
+            margin-top: 5%;
+            margin-bottom: 5%;
+        }
+
+        .admin-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 7%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .admin-btn {
+            background-color: #6366f1;
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 280px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .admin-btn:hover {
+            background-color: #4f46e5;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .admin-btn:disabled {
+            background-color: #cbd5e1;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .wallet-status {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .wallet-status button {
+            color: #f9f9fb;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            font-weight: bold;
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-background"></div>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN ADMIN PANEL</div>
+        <div class="wallet-status">
+            <button id="connect" style="background-color: red;" disabled>Admin Not Connected</button>
+            <button id="walletSign" style="background-color: red;" class="wallet-icon">🧾</button>
+        </div>
+    </header>
+
+    <main class="admin-panel">
+        <button class="admin-btn" onclick="window.location.href='/candidatesApproval'" id="btnApprove">Candidates
+            Approval</button>
+        <button class="admin-btn" onclick="startElection()" id="btnStart">Start Elections</button>
+        <button class="admin-btn" onclick="stopElection()" id="btnStop">Election Stopped</button>
+        <button class="admin-btn" onclick="history.back()">Go Back</button>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let contract, address, tx, el;
+        async function initContract() {
+            if (!window.ethereum) {
+                alert("No wallet detected");
+                window.location.href = "/home";
+            }
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            const signer = provider.getSigner();
+            address = await signer.getAddress();
+            console.log(address);
+            if (address !== "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266") {
+                alert("You're not authorized to access this panel");
+                window.location.href = "/home";
+            }
+            document.getElementById("connect").innerText = `Connected:- ${address}`;
+            document.getElementById("connect").style.backgroundColor = "green";
+            document.getElementById("walletSign").style.backgroundColor = "green";
+
+            // Load contract address and ABI
+            const addressResponse = await fetch("/contractAddress.json");
+            const { Address: contractAddress } = await addressResponse.json();
+
+            const abiResponse = await fetch("/abi/Voting.json");
+            const { abi } = await abiResponse.json();
+
+            contract = new ethers.Contract(contractAddress, abi, signer);
+            console.log(contract);
+            tx = await contract.electionStart();
+            console.log(tx);
+            if (tx == true) {
+                let start = document.getElementById("btnStart");
+                start.disabled = true;
+                start.style.backgroundColor = "grey";
+            }
+            el = await contract.electionEnd();
+            console.log(el);
+            if (el == true) {
+                let start = document.getElementById("btnStop");
+                start.disabled = true;
+                start.style.backgroundColor = "grey";
+            }
+
+        }
+        async function startElection() {
+            
+            try {
+                const tx = await contract.startVoting();
+                await tx.wait();
+                alert("Election started successfully.");
+            } catch (err) {
+                alert("Error starting election: " + err.message);
+            }
+        }
+
+        async function stopElection() {
+            try {
+                const tx = await contract.endVoting();
+                await tx.wait();
+                alert("Election stopped successfully.");
+            } catch (err) {
+                alert("Error stopping election: " + err.message);
+            }
+        }
+        window.onload = initContract;
+    </script>
+</body>
+
+</html>

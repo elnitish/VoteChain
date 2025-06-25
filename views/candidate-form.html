@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate Form</title>
+    <link rel="stylesheet" href="candidate-form.css" />
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN</div>
+        <div class="wallet-status">
+            <button id="connect" style="background-color: red;" disabled>Not Connected</button>
+            <button id="walletSign" style="background-color: red;" class="wallet-icon">🧾</button>
+        </div>
+    </header>
+    <div class="img">
+        <main class="form-container">
+            <h1>Candidate Form</h1>
+
+            <form id="candidateForm" method="post" action="/candidatesApproval">
+                <label for="name">Candidate Name</label>
+                <input type="text" id="candidateName" placeholder="Enter candidate name" name="candidateName"
+                    required />
+
+                <label for="phone">Phone Number</label>
+                <input type="text" id="candidateContact" placeholder="Enter phone number" name="candidateContact"
+                    required />
+
+                <label for="wallet">Wallet Address</label>
+                <input type="text" id="walletAddress" placeholder="Enter wallet address" name="ethAddress" readonly
+                    required />
+                <button class="btn" id="connectWalletBtn">Fetch Address from MetaMask</button>
+
+                <button type="submit" id="submit-btn" class="submit-btn">Submit</button>
+            </form>
+        </main>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        let signer, contract, contractABI, contractAddress, address;
+        console.log("MetaMask is installed!");
+        async function init() {
+            if (!window.ethereum) {
+                alert("Metamask not found");
+                return;
+            }
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            if (!provider) {
+                alert("Connect to the wallet");
+                return;
+            }
+            const signer = await provider.getSigner();
+            address = await signer.getAddress();
+            if (signer) {
+                console.log("Conneted to wallet:", signer);
+            }
+            if (address) {
+                console.log("Address fetched:", address);
+                document.getElementById("connect").innerText = "Connected";
+                document.getElementById("connect").style.backgroundColor = "green";
+                document.getElementById("walletSign").style.backgroundColor = "green";
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                let [tx1, tx2, tx3] = await contract.getCandidates();
+                for (let i = 0; i < tx3.length; i++) {
+                    if (ethers.utils.getAddress(tx3[i]) === ethers.utils.getAddress(address)) {
+                        alert("Already registered as Candidate");
+                    }
+                }
+                console.log("Contract initialized:", contract);
+                console.log(tx3);
+            }
+        }
+        init()
+        let connectWalletBtn = document.getElementById("connectWalletBtn");
+        connectWalletBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            document.getElementById("walletAddress").value = address;
+        })
+    </script>
+</body>
+
+</html>

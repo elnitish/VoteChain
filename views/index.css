@@ -1,0 +1,239 @@
+/* Keyframe Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Base Styles */
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f9f9fb;
+    color: #111;
+}
+
+/* Navbar */
+.navbar {
+    background: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* Button */
+.btn-primary {
+    background-color: #6366f1;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: large;
+    transition: all 0.3s ease;
+    animation: zoomIn 0.8s ease-out forwards;
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Hero Section */
+.hero {
+    background: url('/img/3d-rendering-blockchain-technology.jpg') no-repeat center;
+    background-size: cover;
+    padding: 10% 10%;
+    text-align: center;
+    color: white;
+    position: relative;
+    margin: 2% 8%;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    animation: fadeInUp 1.2s ease-out forwards;
+}
+
+.hero p {
+    font-size: 1rem;
+    margin: 1rem 0 2rem;
+    animation: fadeInUp 1.4s ease-out forwards;
+}
+
+/* Advantages Section */
+.advantages {
+    padding: 2rem;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out forwards;
+}
+
+.card-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+    animation: fadeIn 1.2s ease-out forwards;
+}
+
+.card {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    width: 260px;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.5s;
+    animation-fill-mode: forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Why Section */
+.why-section {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background: #eef2ff;
+    padding: 2rem;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 1rem;
+    background: #fff;
+    font-size: 0.9rem;
+    color: #888;
+    animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* About Page */
+.about-page {
+    font-family: 'Inter', sans-serif;
+    padding: 2rem;
+    max-width: 900px;
+    margin: auto;
+    animation: fadeInUp 1.2s ease-out forwards;
+}
+
+.about-page .section {
+    margin-bottom: 2.5rem;
+}
+
+.about-page h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.about-page h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.about-page p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.about-page ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.about-page ul li {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.about-page ul li::before {
+    content: "•";
+    color: #6366f1;
+    position: absolute;
+    left: 0;
+}

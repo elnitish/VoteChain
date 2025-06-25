@@ -1,0 +1,324 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vote for Your Candidate</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding-top: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .candidates-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .candidate {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .vote-btn {
+            padding: 10px 15px;
+            font-size: 1rem;
+            background-color: #e67e22;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .vote-btn:hover {
+            background-color: #d35400;
+            transform: scale(1.05);
+        }
+
+        .vote-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Vote for Your Favorite Candidate</h1>
+
+    <div class="candidates-container" id="candidatesList">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let contractAddress, userAddress;
+        let signer, contract, contractABI;
+        let candidateName, candidatesID;
+        async function fetchCandidates() {
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            if (window.ethereum) {
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = await provider.getSigner();
+                    userAddress = await signer.getAddress();
+                    console.log("User Address:", userAddress);
+                    if (!signer) {
+                        console.error("Signer not found. Please connect your wallet.");
+                        return;
+                    }
+                } catch (error) {
+                    alert("Metamask not connected");
+                    window.location.href = "/"
+                }
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                console.log("Contract initialized:", contract);
+                let userStats = await contract.getVoterStats(userAddress);
+                console.log("User Stats:", userStats);
+                if(userStats[0]===false){
+                    alert("You are not registered as a voter. Please register first.");
+                    window.location.href = "/register-voter";
+                }
+                else if(userStats[1]===true){
+                    alert("You have already voted. You cannot vote again.");
+                }
+                let count = await contract.candidatesCount();
+                console.log("Total candidates:", count.toString());
+                [candidateName, candidatesID] = await contract.getCandidates();
+                console.log("Candidate List:", candidateName);
+                const candidatesListBox = document.getElementById("candidatesList");
+
+                for (let i = 0; i < candidateName.length; i++) {
+                    const div = document.createElement("div");
+                    div.classList.add("candidate");
+                    div.innerHTML = `
+                <span class="candidate-name">${candidateName[i]}</span>
+                <button class="vote-btn" onclick="voteCandidate(${candidatesID[i]})">Vote</button>
+              `;
+                    candidatesListBox.appendChild(div);
+                }
+            }
+
+        }
+        fetchCandidates();
+
+        async function voteCandidate(candidateId) {
+            let voteToken = await contract.vote(candidateId);
+
+            console.log("Voting for candidate ID:", candidateId);
+        }
+    </script>
+
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain - Vote</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .navbar .connect-btn {
+            padding: 0.5rem 1rem;
+            background-color: #e5e7eb;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .candidate-row {
+            font-size: x-large;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #fff;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .vote-btn {
+            color: #fff;
+            padding: 0.5rem 1rem;
+            background-color: orange;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: large;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN</div>
+        <button class="connect-btn">Connect to Wallet</button>
+    </header>
+
+    <main class="container">
+        <h1>Candidates</h1>
+        <div id="candidatesList">
+            <!-- Candidates will be inserted here dynamically -->
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        if (!window.ethereum) {
+            alert("Connection to the wallet failed");
+            window.location.href = "/home";
+        }
+        let contractAddress, userAddress;
+        let signer, contract, contractABI;
+        let candidateName, candidatesID;
+        async function fetchCandidates() {
+            //Fetch contract address
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+                console.log("User Address:", userAddress);
+                if (!signer) {
+                    console.error("Signer not found. Please connect your wallet.");
+                    return;
+                }
+            } catch (error) {
+                alert("Metamask not connected");
+                window.location.href = "/"
+            }
+            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            console.log("Contract initialized:", contract);
+            let userStats = await contract.getVoterStats(userAddress);
+            console.log("User Stats:", userStats);
+            if (userStats[0] === false) {
+                alert("You are not registered as a voter. Please register first.");
+                window.location.href = "/register-voter";
+            }
+            else if (userStats[1] === true) {
+                alert("You have already voted. You cannot vote again.");
+                window.location.href = "/home";
+            }
+            let count = await contract.candidatesCount();
+            console.log("Total candidates:", count.toString());
+            [candidateName, candidatesID] = await contract.getCandidates();
+            console.log("Candidate List:", candidateName);
+            const candidatesListBox = document.getElementById("candidatesList");
+            for (let i = 0; i < count; i++) {
+                const row = document.createElement("div");
+                const name = document.createElement("span");
+                name.textContent = candidateName[i];
+                row.className = "candidate-row";
+                const button = document.createElement("button");
+                button.className = "vote-btn";
+                button.textContent = "Vote";
+                button.onclick = () => vote(candidatesID[i]);
+                row.appendChild(name);
+                row.appendChild(button);
+                candidatesListBox.appendChild(row);
+            }
+        }
+        window.onload = fetchCandidates;
+
+        async function vote(candidateId) {
+            console.log("Vote button pressed");
+            let voteToken = await contract.vote(candidateId);
+            console.log("Voting for candidate ID:", candidateId);
+            alert("Vote casted successfully");
+        }
+    </script>
+</body>
+
+</html>

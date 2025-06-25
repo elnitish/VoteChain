@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoteChain</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="logo">🗳️ VoteChain </div>
+    <div class="logo"> elnitish </div>
+    <nav class="nav-links">
+      <a href="/about.html">About</a>
+      <!-- <a href="#">Contact</a>
+      <a href="#">GitHub</a> -->
+      <button class="btn-primary" onclick="home()">Get Started</button>
+    </nav>
+  </header>
+
+  <main class="main-section">
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Vote Securely. Transparently. Decentralized.</h1>
+        <p>Our platform ensures secure, tamper-proof, and anonymous voting using blockchain technology, providing a
+          trustworthy and transparent voting experience.</p>
+        <button class="btn-primary" onclick="home()">Get Started</button>
+      </div>
+    </section>
+
+    <section class="advantages">
+      <h2>Key Advantages</h2>
+      <div class="card-container">
+        <div class="card">
+          <h3>🔒 Tamper-Proof Voting</h3>
+          <p>Blockchain's immutability ensures votes cannot be altered or deleted.</p>
+        </div>
+        <div class="card">
+          <h3>🆔 Anonymous & Secure</h3>
+          <p>Voter identities are anonymized, ensuring privacy and preventing coercion.</p>
+        </div>
+        <div class="card">
+          <h3>🔍 Transparent Result Auditing</h3>
+          <p>All votes are recorded on a public ledger, allowing for independent verification of results.</p>
+        </div>
+        <div class="card">
+          <h3>🗂️ Open & Decentralized Ledger</h3>
+          <p>The system is open-source and decentralized, promoting trust and community involvement.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-section">
+      <h2>Why Decentralized Voting Matters</h2>
+      <p>Decentralized voting systems eliminate single points of failure, preventing fraud and manipulation. By
+        distributing control across a network, we ensure that no single entity can influence the outcome, fostering
+        trust and empowering citizens with a more secure and democratic process.</p>
+    </section>
+
+    <section class="cta-section">
+      <h2>Ready to experience the future of voting?</h2>
+      <p>Join VoteChain today and be part of a secure, transparent, and decentralized voting revolution.</p>
+      <button class="btn-primary" onclick="home()">Get Started</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <span>© 2024 VoteChain. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    async function home() {
+      if (window.ethereum) {
+        window.location.href = "/home";
+      } else {
+        alert("MetaMask is not installed. Please install it to use this dApp.");
+      }
+    }
+  </script>
+</body>
+
+</html>

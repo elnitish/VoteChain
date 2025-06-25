@@ -1,0 +1,217 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Winner Announcement</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .winner-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            backdrop-filter: blur(8px);
+            animation: slideIn 1s ease-out;
+        }
+
+        .winner-card h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #f1c40f;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        .winner-card p {
+            font-size: 1.2rem;
+            color: #ecf0f1;
+            margin: 10px 0;
+            animation: fadeIn 2s ease-in;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: explode 1s infinite ease-out;
+            background-color: #f39c12;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(10);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="winner-card">
+        <h1>🎉 Winner Announced! 🎉</h1>
+        <p id="winner-name">Winner Name: <strong></strong></p>
+        <p id="vote-count">Total Votes: <strong></strong></p>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let winnerName, winnerVotes;
+        let contract, contractABI, contractAddress
+        async function getWinner() {
+            if (window.ethereum) {
+                // Fetch contract address
+                let contractData = await fetch("contractAddress.json");
+                let contractJson = await contractData.json();
+                contractAddress = contractJson.Address;
+                console.log("Contract Address:", contractAddress);
+
+                // Fetch contract ABI
+                const abiResponse = await fetch("abi/Voting.json");
+                const abiData = await abiResponse.json();
+                contractABI = abiData.abi;
+                console.log("Contract ABI:", contractABI);
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                contract = new ethers.Contract(contractAddress, contractABI, provider);
+                console.log("Contract initialized:", contract);
+                try {
+                    [winnerName, winnerVotes] = await contract.getWinner();
+                    console.log("Winner Name:", winnerName);
+                    // Example script to replace text dynamically
+                    document.getElementById('winner-name').innerHTML = `Winner Name: <strong>${winnerName}</strong>`;
+                    document.getElementById('vote-count').innerHTML = `Total Votes: <strong>${winnerVotes}</strong>`;
+
+                } catch (error) {
+                    console.error("Error fetching winner:", error);
+                    alert("Error fetching winner. Please try again later.");
+                    return;
+                }
+            }
+        }
+        getWinner();
+
+    </script>
+</body>
+
+</html>
+
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Election Results</title>
+    <link rel="stylesheet" href="winner.css" />
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VoteChain</div>
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="/about">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <main class="results-container">
+        <div class="container-content">
+            <h1>Election Results</h1>
+            <h2 id="winner-name"></h2>
+            <p id="vote-count" class="vote-count"></p>
+            <p class="description">
+                This election was conducted on VoteChain, a secure, tamper-proof, and decentralized voting system. All votes
+                are recorded on the blockchain, ensuring transparency and integrity.
+            </p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let winnerName, winnerVotes;
+        let contract, contractABI, contractAddress
+        async function getWinner() {
+            if (!window.ethereum) {
+                alert("Install a ETH wallet to view the results");
+            }
+
+            // Fetch contract address
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            contract = new ethers.Contract(contractAddress, contractABI, provider);
+            console.log("Contract initialized:", contract);
+            try {
+                [winnerName, winnerVotes] = await contract.getWinner();
+                console.log("Winner Name:", winnerName);
+            } catch (error) {
+                console.error("Error fetching winner:", error);
+                alert("Error fetching winner. Please try again later.");
+            }
+            document.getElementById('winner-name').innerHTML = `Winner Name: ${winnerName}`;
+            document.getElementById('vote-count').innerHTML = `Total Votes: ${winnerVotes}`;
+        }
+        window.onload = getWinner;
+
+    </script>
+</body>
+
+</html>

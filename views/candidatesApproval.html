@@ -1,0 +1,402 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate Approval</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .address {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            word-break: break-word;
+        }
+
+        .approve-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .approve-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body> -->
+<!-- 
+    <h1>Pending Candidate Approvals</h1>
+
+    <div class="container" id="candidateList">
+         Candidate cards will appear here -->
+<!-- </div>  -->
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        // Dummy candidate data (replace this with actual fetch from backend)
+        let candidatesJSON;
+        let signer, contract, contractABI, contractAddress, name, address;
+        async function init() {
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+
+            if (window.ethereum) {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+
+                address = await signer.getAddress();
+                let adminAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+                if (address.toLowerCase() !== adminAddress.toLowerCase()) {
+                    alert("You are not authorized to access this admin panel.");
+                    window.location.href = "/home"; // Redirect to home page
+                    return;
+                }
+            }
+        }
+        init();
+        async function fetchCandidates() {
+            let candidatesFetch = await fetch("/candidatesApprovalList");
+            candidatesJSON = await candidatesFetch.json();
+            console.log("Pending candidates for approval ", candidatesJSON);
+            const container = document.getElementById("candidateList");
+
+            candidatesJSON.forEach(candidate => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+            <div class="name">${candidate.name}</div>
+            <div class="address">${candidate.ethAddress}</div>
+            <button class="approve-btn" onclick="approveCandidateInDBAndBlockchain('${candidate.name}', '${candidate.ethAddress}')">Approve</button>
+          `;
+                container.appendChild(card);
+            });
+        }
+        fetchCandidates();
+
+        async function approveCandidateInDBAndBlockchain(name, address) {
+
+            // let address = ethers.utils.getAddress(address);
+            let data = {
+                address: address,
+            };
+            console.log("Sending the address ", address);
+
+            try {
+
+                let response = await fetch("/approveCandidate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                await approveCandidateInBlockchain(name, address);
+                let result = await response.text();
+                alert("Approved: " + address);
+            } catch (error) {
+                console.log("Error ", error);
+            }
+        }
+
+        async function approveCandidateInBlockchain(name, address) {
+            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            console.log("Contract initialized:", contract);
+            let [candidateList, candidateID, candidateAddress] = await contract.getCandidates();
+            console.log(candidateAddress);
+            console.log("Registering candidate to the blockchain");
+            console.log(name, address);
+            try {
+                let tx = await contract.addCandidate(name, address);
+                await tx.wait();
+                console.log(`Candidate Registered!\nName: ${name}`);
+
+            } catch (error) {
+                console.error("Registration failed:", error);
+            }
+        } 
+    </script> -->
+<!-- 
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain - Candidate Approvals</title>
+    <style>
+        /* Reset and Base Styles */
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #4f46e5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .candidate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            font-size: large;
+            font-style: italic;
+        }
+
+        .candidate-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .approve-btn {
+            padding: 0.5rem 1rem;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .approve-btn:hover {
+            background-color: #4338ca;
+        }
+
+        .reject-btn {
+            padding: 0.5rem 1rem;
+            background-color: #ff3f3f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reject-btn:hover {
+            background-color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🛡️ VOTECHAIN ADMIN PANEL</div>
+    </header>
+
+    <main class="container">
+        <h1>Approve Registered Candidates</h1>
+        <div id="candidateList">
+            <!-- Candidates will be added here by JS -->
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        if (!window.ethereum) {
+            alert("No wallet detected");
+        }
+        let candidatesJSON;
+        let signer, contract, contractABI, contractAddress, name, address;
+        async function init() {
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = await provider.getSigner();
+            address = await signer.getAddress();
+            let adminAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+            if (address.toLowerCase() !== adminAddress.toLowerCase()) {
+                alert("You are not authorized to access this admin panel.");
+                window.location.href = "/home"; // Redirect to home page
+                return;
+            }
+            fetchCandidates();
+        }
+
+        window.onload = init;
+        async function fetchCandidates() {
+            let candidatesFetch = await fetch("/candidatesApprovalList");
+            candidatesJSON = await candidatesFetch.json();
+            console.log("Pending candidates for approval ", candidatesJSON);
+            const container = document.getElementById("candidateList");
+
+            candidatesJSON.forEach(candidate => {
+                const card = document.createElement("div");
+                card.className = "candidate-row";
+                card.innerHTML = `
+            <div class="name">${candidate.name}</div>
+            <div class="address">${candidate.ethAddress}</div>
+            <button class="approve-btn" onclick="approveCandidateInDBAndBlockchain('${candidate.name}', '${candidate.ethAddress}')">Approve</button>
+            <button class="reject-btn" onclick="rejectCandidateInDB('${candidate.ethAddress}')">Reject</button>
+          `;
+                container.appendChild(card);
+            });
+        }
+
+        async function approveCandidateInDBAndBlockchain(name, address) {
+            console.log("Button clicked");
+
+            // let address = ethers.utils.getAddress(address);
+            let data = {
+                address: address,
+            };
+            console.log("Sending the address ", address);
+
+            try {
+
+                let response = await fetch("/approveCandidate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                await approveCandidateInBlockchain(name, address);
+                let result = await response.text();
+                alert("Approved: " + address);
+            } catch (error) {
+                console.log("Error ", error);
+            }
+        }
+
+        async function approveCandidateInBlockchain(name, address) {
+            contract = new ethers.Contract(contractAddress, contractABI, signer);
+            console.log("Contract initialized:", contract);
+            try {
+                let tx = await contract.addCandidate(name, address);
+                await tx.wait();
+                window.location.href = "/candidatesApproval";
+                console.log(`Candidate Registered!\nName: ${name}`);
+
+            } catch (error) {
+                console.error("Registration failed:", error);
+            }
+        }
+
+        async function rejectCandidateInDB(address) {
+            console.log("Button clicked");
+            let data = {
+                userAddress: address,
+            };
+            console.log("Sending the address ", address);
+            try {
+                let response = await fetch("/candidateRejection", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                alert("Candidate rejected " + address);
+                window.location.href = "/candidatesApproval";
+            } catch (error) {
+                console.log("Error ", error);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

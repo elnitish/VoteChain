@@ -1,0 +1,275 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Participated Candidates</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding-top: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .candidate-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 30px;
+        }
+
+        .candidate-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .candidate-card:hover {
+            transform: scale(1.03);
+        }
+
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head> -->
+
+<!-- <body> -->
+
+<!-- <h1>Participated Candidates</h1>
+
+    <div class="candidate-list" id="candidateList">
+         Candidate cards will be inserted here -->
+<!-- </div> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        // Example static data – replace with dynamic JS later
+        let contractAddress;
+        let signer, contract, contractABI;
+        let candidateList;
+        // Fetch contract address
+
+        // let contractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
+        async function candidateCount() {
+            let contractData = await fetch("contractAddress.json");
+            let contractJson = await contractData.json();
+            contractAddress = contractJson.Address;
+            console.log("Contract Address:", contractAddress);
+
+            // Fetch contract ABI
+            const abiResponse = await fetch("abi/Voting.json");
+            const abiData = await abiResponse.json();
+            contractABI = abiData.abi;
+            console.log("Contract ABI:", contractABI);
+            if (window.ethereum) {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                if (!signer) {
+                    console.error("Signer not found. Please connect your wallet.");
+                    return;
+                }
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                console.log("Contract initialized:", contract);
+                let count = await contract.candidatesCount();
+                console.log("Total candidates:", count.toString());
+                [candidateList,candidateID,candidateAddress] = await contract.getCandidates();
+                console.log("Candidate List:", candidateList);
+                candidateList.forEach(name => {
+                    const card = document.createElement("div");
+                    card.className = "candidate-card";
+                    card.innerHTML = `<div class="candidate-name">${name}</div>`;
+                    container.appendChild(card)
+                    console.log("Candidate Name:", name);
+                });
+            }
+
+        }
+        candidateCount();
+        const container = document.getElementById("candidateList");
+
+
+
+    </script> -->
+
+<!-- </body>
+
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoteChain - Participating Candidates</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #4f46e5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .candidate-card {
+            background-color: #ffffff;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .candidate-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .badge {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        #connected {
+            border-radius: 30px;
+            background-color: red;
+            padding: 8px;
+            color: #f3f4f6;
+            border: 5px solid white;
+            box-shadow: #111827;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🗳️ VOTECHAIN</div>
+        <button id="connected" >Connect wallet</button>
+    </header>
+
+    <main class="container">
+        <h1>Participating Candidates</h1>
+        <div id="candidateList">
+            <!-- Candidate entries will be inserted here -->
+        </div>
+    </main>
+
+    <script>
+        let contractAddress, signer, contract, contractABI, address;
+        if (!window.ethereum) {
+            alert("You need a ETH wallet to view participants");
+            window.location.href = "/home";
+        }
+        async function fetchCandidates() {
+            try {
+                const contractData = await fetch("contractAddress.json");
+                const contractJson = await contractData.json();
+                contractAddress = contractJson.Address;
+
+                const abiResponse = await fetch("abi/Voting.json");
+                const abiData = await abiResponse.json();
+                contractABI = abiData.abi;
+
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                address = await signer.getAddress();
+                console.log(address);
+                
+                let connected = document.getElementById("connected");
+                connected.innerText = `Connected:- ${address}`;
+                connected.style.backgroundColor = "green";
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                console.log(contract)
+
+                const [candidateNames, candidateIDs, candidateAddresses] = await contract.getCandidates();
+
+                const container = document.getElementById("candidateList");
+                candidateNames.forEach((name, index) => {
+                    const card = document.createElement("div");
+                    card.className = "candidate-card";
+
+                    const nameSpan = document.createElement("span");
+                    nameSpan.className = "candidate-name";
+                    nameSpan.textContent = name;
+
+                    const badge = document.createElement("span");
+                    badge.className = "badge";
+                    badge.textContent = "Registered";
+
+                    card.appendChild(nameSpan);
+                    card.appendChild(badge);
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error fetching candidate data:", error);
+            }
+        }
+        fetchCandidates();
+    </script>
+</body>
+
+</html>

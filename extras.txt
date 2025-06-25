@@ -1,0 +1,13 @@
+    // //chainlink function to automatically end voting according to the time stamps
+
+    // function checkUpkeep() external view returns (bool upkeepNeeded) {
+    //     upkeepNeeded = (block.timestamp >= votingEndTime && !electionEnd);
+    // }
+
+    // function performUpkeep() external {
+    //     if (block.timestamp >= votingEndTime && !electionEnd) {
+    //         endVoting();
+    //     }
+    // }
+
+    
