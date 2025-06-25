@@ -36,12 +36,6 @@ mongoose
     });
 
 
-// twilio acccount 
-const accountSid = 'AC71c6755250a68b6f5df69abc71247fc9';
-const authToken = '8586a877ecf8bf8dfd67bf5eebca4b2f';
-const client = require('twilio')(accountSid, authToken);
-
-
 app.use("/abi", express.static(path.join(__dirname, "../artifacts/contracts/Voting.sol")));
 app.use(express.static(path.join(__dirname, "../views")));
 app.use(express.urlencoded({ extended: true }));
@@ -118,25 +112,6 @@ app.post("/approveCandidate", async (req, res) => {
             {
                 new: true
             });
-        // if (update) {
-        //     let user = await pendingCandidatesModel.findOne({ ethAddress: ethAddress });
-        //     console.log("Contact:- ", user.contact);
-        //     const message = `Dear ${user.name}, Congratulations! 🎉 You have been approved as a candidate for the upcoming election on our platform. Your Ethereum address ${user.ethAddress} is now registered and active.— Team Blockchain Voting`;
-        //     console.log(message);
-        //     try {
-        //         client.messages
-        //             .create({
-        //                 body: message,
-        //                 messagingServiceSid: 'MG4df9d2c86a5b7a29663140881a5005e5',
-        //                 to: user.contact,
-        //             })
-        //             .then(message => {
-        //                 console.log(message.sid);
-        //                 console.log(message.status);
-        //             });
-        //     } catch (error) {
-        //         console.log("Error in sending message");
-        //     }
         res.redirect("/candidatesApproval")
     } catch (error) {
         console.log(error);
